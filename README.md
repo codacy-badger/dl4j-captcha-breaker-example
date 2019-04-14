@@ -8,7 +8,7 @@ Quick example of breaking simple captcha images with DL4J.
 * Java JDK 8 or higher installed and available on search path
 * SBT 1.0.0 or higher installed and available on search path
 * Git client installed and available on search path
-* At least 8GB RAM available for the application
+* At least 2GB RAM available for the application
 * Cloned repository for this project:
 
 ```bash
@@ -22,13 +22,13 @@ To run application navigate to cloned repository folder and execute command:
 
 ```bash
 cd /path/to/cloned/repository #this is mandatory
-sbt -mem 8192 run
+sbt run
 ```
 
 Then learning and verifying model will happen. Please, be patient, as the whole process may take few hours. You should see output similar to that:
 
 ```bash
-dl4j-captcha-breaker-example$ sbt -mem 8192 run
+dl4j-captcha-breaker-example$ sbt -mem run
 [info] Loading settings for project global-plugins from idea.sbt ...
 [info] Loading global plugins from /home/mmurawski/.sbt/1.0/plugins
 [info] Loading settings for project dl4j-captcha-breaker-example-build from plugins.sbt ...
@@ -81,7 +81,7 @@ dl4j-captcha-breaker-example$ sbt -mem 8192 run
 1. You can change how long model will be trained by providing custom positive integer indicating number of learning epochs. Default value is 200.
 
 ```bash
-sbt -mem 8192 "run epochs_number"
+sbt "run epochs_number"
 ```
 
 2. You can also provide custom directory with your input letter images and testing captcha images, BUT, as this is really quick example, there are several things required (or hardcoded):
@@ -94,7 +94,7 @@ You have to provide number of epochs and after that path to resources directory.
 * Inside your resources directory you have to have **captcha_images** directory with set of captcha images named ***ABCDE.jpg***, where ***ABCDE*** is a solution for captcha inside file.
 
 ```bash
-sbt -mem 8192 "run epochs_number /path/to/resources/directory"
+sbt "run epochs_number /path/to/resources/directory"
 ```
 
 Unmatching parameters configuration are, as possible, converted and set with default values.

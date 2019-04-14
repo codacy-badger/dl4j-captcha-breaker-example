@@ -10,7 +10,7 @@ import javax.imageio.ImageIO
 
 object Main extends App with StrictLogging {
 
-  val (numEpochs, resourcesDir) = parseInputArgs(args)
+  private val (numEpochs, resourcesDir) = parseInputArgs(args)
 
   logger.info(s"Run arguments established: resources dir - $resourcesDir, number of learning epochs: $numEpochs.")
 
@@ -32,7 +32,7 @@ object Main extends App with StrictLogging {
   private val inputSize =
     captchaImages.size
 
-  val (captchaAccuracy, solvedCorrectlyCounter) = checkAccuracyOnCaptchaImages
+  private val (captchaAccuracy, solvedCorrectlyCounter) = checkAccuracyOnCaptchaImages
 
   logger.info(
     s"Trained model accuracy on testing set of captcha images (5 alphanums) is: $captchaAccuracy ($solvedCorrectlyCounter/$inputSize correctly predicted).")

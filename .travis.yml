@@ -6,6 +6,6 @@ jdk:
 scala:
   - 2.12.8
 
-script: sbt -J-Xmx8192m -J-XX:ReservedCodeCacheSize=512m -J-XX:MaxMetaspaceSize=1024m -J-XX:+UseParallelGC ++$TRAVIS_SCALA_VERSION ";clean;test;it:test;coverage"
+script: sbt ++$TRAVIS_SCALA_VERSION ";clean;test;it:test;coverage"
 
 after_success: "sbt coverageReport coveralls"
