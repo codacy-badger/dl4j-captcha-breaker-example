@@ -1,0 +1,8 @@
+-Dfile.encoding=UTF8
+-Xmx4096m
+-XX:ReservedCodeCacheSize=512m
+-XX:MaxMetaspaceSize=1024m
+-XX:+TieredCompilation
+-XX:-UseGCOverheadLimit
+-XX:+UseParallelGC
+-XX:+CMSClassUnloadingEnabled
