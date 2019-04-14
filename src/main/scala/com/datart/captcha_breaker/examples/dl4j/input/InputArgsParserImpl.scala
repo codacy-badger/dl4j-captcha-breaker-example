@@ -7,7 +7,7 @@ trait InputArgsParser {
 }
 
 object InputArgsParserImpl {
-  private val defaultNumEpochs    = 200
+  private val defaultNumEpochs    = 400
   private val defaultResourcesDir = "./src/main/resources"
 
   def parseInputArgs(args: Array[String]): (Int, String) = {

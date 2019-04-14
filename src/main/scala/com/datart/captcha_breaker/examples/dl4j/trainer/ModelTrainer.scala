@@ -3,7 +3,10 @@ package com.datart.captcha_breaker.examples.dl4j.trainer
 import java.io.{File => JFile}
 import java.util.Random
 
+import better.files._
+import com.datart.captcha_breaker.examples.dl4j.image.ImageCleanerImpl.clean
 import com.typesafe.scalalogging.StrictLogging
+import javax.imageio.ImageIO
 import org.datavec.api.io.filters.BalancedPathFilter
 import org.datavec.api.io.labels._
 import org.datavec.api.split.FileSplit
@@ -46,7 +49,8 @@ class ModelTrainerImpl extends ModelTrainer with StrictLogging {
   override def trainModel(directory: JFile, numEpochs: Int): (MultiLayerNetwork, RecordReaderDataSetIterator) = {
 
     val randomGenerator       = new Random(seed)
-    val filesInDir            = new FileSplit(directory, randomGenerator)
+    val resourcesDir          = cleanInputFiles(directory)
+    val filesInDir            = new FileSplit(resourcesDir, randomGenerator)
     val labelMaker            = new ParentPathLabelGenerator()
     val pathFilter            = new BalancedPathFilter(randomGenerator, Array("jpeg"), labelMaker)
     val filesInDirSplit       = filesInDir.sample(pathFilter, learningSetPercentage, testingSetPercentage)
@@ -86,6 +90,19 @@ class ModelTrainerImpl extends ModelTrainer with StrictLogging {
     logger.info("Learning model finished.")
 
     (model, captchaTest)
+  }
+
+  private def cleanInputFiles(directory: JFile): JFile = {
+
+    val tempDir = File.newTemporaryDirectory()
+    directory.toScala.children.foreach { letterDir =>
+      val tmpLetterDir = tempDir.createChild(letterDir.name, asDirectory = true)
+      letterDir.children.foreach { imageFile =>
+        val outputFile = tmpLetterDir.createChild(imageFile.name)
+        ImageIO.write(clean(ImageIO.read(imageFile.toJava)), "jpeg", outputFile.toJava)
+      }
+    }
+    tempDir.toJava
   }
 
   private def createModelConf = {

@@ -74,4 +74,3 @@ val sensorsMetrics = Project(id = projectName, base = file("."))
 wartremoverErrors ++= Warts.all
 coverageEnabled := true
 coverageMinimum := 80
-coverageFailOnMinimum := true

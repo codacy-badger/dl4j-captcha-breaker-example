@@ -3,6 +3,7 @@ package com.datart.captcha_breaker.examples.dl4j.breaker
 //scalastyle:off illegal.imports
 import java.awt.image.BufferedImage
 //scalastyle:on
+import com.datart.captcha_breaker.examples.dl4j.image.ImageCleanerImpl.clean
 import org.datavec.image.loader.ImageLoader
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.cpu.nativecpu.NDArray
@@ -24,8 +25,9 @@ class CaptchaBreakerImpl(trainedModel: MultiLayerNetwork) extends CaptchaBreaker
   private val imageLoader           = new ImageLoader(height, width, 1)
 
   override def breakCaptcha(captchaImage: BufferedImage): String = {
+    val cleanedImage = clean(captchaImage)
     val imageDataSets = (1 to lettersInCpatchaCount)
-      .map(getSubimage(lettersInCpatchaCount, captchaImage, _))
+      .map(getSubimage(lettersInCpatchaCount, cleanedImage, _))
       .map(i => new DataSet(imageLoader.asRowVector(i), new NDArray()))
 
     imageDataSets
