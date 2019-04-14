@@ -26,7 +26,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction
 import scala.collection.JavaConverters._
 
 trait ModelTrainer {
-  def trainModel(directory: JFile): (MultiLayerNetwork, RecordReaderDataSetIterator)
+  def trainModel(directory: JFile, numEpochs: Int): (MultiLayerNetwork, RecordReaderDataSetIterator)
   def accuracy(dataSet: DataSetIterator, model: MultiLayerNetwork): Double
 }
 
@@ -39,12 +39,11 @@ class ModelTrainerImpl extends ModelTrainer with StrictLogging {
   private val numOutputs            = 27 // chars from "2346789ACDEFGHJKLNPQRTUVXYZ"
   private val learningRate          = 0.01
   private val batchSize             = 128
-  private val numEpochs             = 10
   private val learningSetPercentage = 90D
   private val testingSetPercentage  = 10D
   private val printEveryIteration   = 1000
 
-  override def trainModel(directory: JFile): (MultiLayerNetwork, RecordReaderDataSetIterator) = {
+  override def trainModel(directory: JFile, numEpochs: Int): (MultiLayerNetwork, RecordReaderDataSetIterator) = {
 
     val randomGenerator       = new Random(seed)
     val filesInDir            = new FileSplit(directory, randomGenerator)
@@ -61,11 +60,11 @@ class ModelTrainerImpl extends ModelTrainer with StrictLogging {
     val captchaTrain = new RecordReaderDataSetIterator(trainDataRecordReader, batchSize, 1, numOutputs)
     val captchaTest  = new RecordReaderDataSetIterator(testDataRecordReader, batchSize, 1, numOutputs)
 
-    val trainScaler = new ImagePreProcessingScaler(0,1)
+    val trainScaler = new ImagePreProcessingScaler(0, 1)
     trainScaler.fit(captchaTrain)
     captchaTrain.setPreProcessor(trainScaler)
 
-    val testScaler = new ImagePreProcessingScaler(0,1)
+    val testScaler = new ImagePreProcessingScaler(0, 1)
     testScaler.fit(captchaTest)
     captchaTest.setPreProcessor(testScaler)
 
@@ -76,18 +75,17 @@ class ModelTrainerImpl extends ModelTrainer with StrictLogging {
     model.init()
     model.setListeners(new ScoreIterationListener(printEveryIteration))
 
+    logger.info("Starting learning model...")
+
     // train the model
-    val trainedModel = (0 until numEpochs).foldLeft(model) {
-      case (bestModel, _) =>
-        model.fit(captchaTrain)
-        if (accuracy(captchaTest, bestModel) < accuracy(captchaTest, model)) {
-          model.clone()
-        } else {
-          bestModel
-        }
+    (0 until numEpochs).foreach { epochNumber =>
+      logger.info(s"Epoch number: $epochNumber/$numEpochs.")
+      model.fit(captchaTrain)
     }
 
-    (trainedModel, captchaTest)
+    logger.info("Learning model finished.")
+
+    (model, captchaTest)
   }
 
   private def createModelConf = {
